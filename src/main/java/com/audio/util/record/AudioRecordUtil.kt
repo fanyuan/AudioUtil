@@ -27,9 +27,13 @@ interface RecordCallback{
     fun onRecordStatusChanged(isInRecording:Boolean)
     //fun onRecordFinish(path:String)
 }
-
+public interface FinishCallback{
+    fun onFinish()
+}
 class AudioRecordUtil {
+
     companion object{
+
         private val TAG = "AudioRecordUtil"
         /**
          * 采样率，现在能够保证在所有设备上使用的采样率是44100Hz, 但是其他的采样率（22050, 16000, 11025）在一些设备上也可以使用。
@@ -84,9 +88,9 @@ class AudioRecordUtil {
         private fun init(sampleRateInHz:Int, channelConfig:Int, audioFormat:Int) {
             val minBufferSize =
                     AudioRecord.getMinBufferSize(sampleRateInHz, channelConfig, audioFormat)
-            //MediaRecorder.AudioSource.VOICE_COMMUNICATION
+            //MediaRecorder.AudioSource.MIC
             audioRecord = AudioRecord(
-                    MediaRecorder.AudioSource.MIC, sampleRateInHz,
+                    MediaRecorder.AudioSource.VOICE_COMMUNICATION, sampleRateInHz,
                     channelConfig, audioFormat, minBufferSize
             )
 
@@ -94,6 +98,16 @@ class AudioRecordUtil {
             handlerThread.start();
             workHandler = Handler(handlerThread.getLooper());
         }
+
+        /**
+         * 重新开始音频录制
+         */
+        @JvmStatic
+        fun reStartRecord(context: Context, wavOutFilePath: String, callback: RecordCallback) {
+            giveUp()
+            startRecord(context,wavOutFilePath,callback)
+        }
+
         /**
          * 开始录音
          * wavOutFilePath wav录音文件输出路径
@@ -134,7 +148,7 @@ class AudioRecordUtil {
             //情况判断  权限  录制状态
 
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED){
-                callback?.onRecordError( "${Manifest.permission.RECORD_AUDIO} 权限未授权")
+                callback?.onRecordError( "${Manifest.permission.RECORD_AUDIO} 权限未授予")
                 return
             }
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
@@ -231,8 +245,6 @@ class AudioRecordUtil {
                 it.stop()
                 it.release()
                 audioRecord = null
-                //ConvertUtil.convertPcm2Wav(audioPcmPath, audioWavPath)
-                //File(audioPcmPath).delete()
             }
         }
 
@@ -241,14 +253,18 @@ class AudioRecordUtil {
          * 建议在字线程调用处理
          */
         @JvmStatic
-        fun finishRecord(){
+        fun finishRecord(callback: FinishCallback?){
             if(isRecording){
                 pause();
             }
+            Log.d("ddebug","finishRecord currentOutAudioPath = $currentOutAudioPath")
             val audioPcmPath = currentOutAudioPath?.let { getPcmPath(it) }
-            ConvertUtil.convertPcm2Wav(audioPcmPath, currentOutAudioPath)
-            File(audioPcmPath).delete()
+            ConvertUtil.convertPcm2WavBitNum16(audioPcmPath, currentOutAudioPath)
+            audioPcmPath?.let { File(audioPcmPath).delete() }
             currentOutAudioPath = null
+            callback?.let {
+                it.onFinish()
+            }
         }
         /**
          * 根据wav文件输出路径得到出pcm文件临时目录
@@ -258,5 +274,28 @@ class AudioRecordUtil {
             buffer.append(".tmp.pcm")
             return buffer.toString()
         }
+
+        /**
+         * 丢弃已录制的音频
+         */
+        @JvmStatic
+        fun giveUp() {
+            if(isRecording){
+                pause()
+            }
+            Log.d("ddebug","放弃录制项：currentOutAudioPath   =  $currentOutAudioPath")
+            currentOutAudioPath?.let {
+                val audioPcmPath = getPcmPath(it)
+                var file1 = File(audioPcmPath)
+                var file2 = File(currentOutAudioPath)
+                Log.d("ddebug", "放弃录制项：   exists1 = ${file1.exists()}  exists2 = ${file2.exists()}")
+                var delete1 = file1.delete()
+                var delete2 = file2.delete()
+                Log.d("ddebug","放弃录制项：   $delete1   $delete2")
+                Log.d("ddebug","放弃录制项：$audioPcmPath     $currentOutAudioPath")
+            }
+            currentOutAudioPath = null
+        }
+
+
     }
-}
