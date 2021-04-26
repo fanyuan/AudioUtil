@@ -44,3 +44,112 @@ AudioUtil  module
            用来提取相关音频文件的片段，调用cutAudio方法通过传入开始时间和结束时间来提取时间区间的音频部分，比如想提取某首歌曲的某几句歌
 
 至于把wav文件转换成mp3可以参考另一模块(https://github.com/fanyuan/MyMp3Convert.git)
+
+
+使用示例：
+================================================
+        录制功能
+
+        java
+
+        String path = AudioUtilHelper.getRecordLocalTempFilePath(this, "一个小测试");
+        AudioUtilHelper.startRecord(this, path, object : RecordCallback {
+        override fun onRecordError(errorMsg: String) {
+        ThreadHelper.runOnUiThreadDelay({
+        DialogAlterHelper.showSingleButtonDialog(this@RecordActivity, errorMsg, { toReRecord() })
+        }, 300)
+
+
+        Apputils.log(applicationContext, "RecordActivity  onRecordError $errorMsg")
+        }
+
+        override fun onRecordStatusChanged(isInRecording: Boolean) {
+        Apputils.log(applicationContext, "RecordActivity  onRecordStatusChanged $isInRecording")
+        }
+
+        })
+
+        kotlin
+
+        fun start(v: View){
+        val path = externalCacheDir?.absolutePath.toString() + File.separator + "hello/test3.wav"
+        AudioUtilHelper.startRecord(this,path,object :RecordCallback{
+        override fun onRecordError(errorMsg: String) {
+        Log.d("ddebug","Record2Activity  onRecordError $errorMsg")
+        }
+
+        override fun onRecordStatusChanged(isInRecording: Boolean) {
+        Log.d("ddebug","Record2Activity  onRecordStatusChanged $isInRecording")
+        }
+
+        })
+        }
+        fun pause(v: View){
+        AudioUtilHelper.pause()
+        }
+        fun finish(v: View){
+        AudioUtilHelper.finishRecord(null)
+        }
+
+-----------------------------
+        mp3转wav
+
+        val mp3Path = "/sdcard/test.mp3"
+        val wavPath = "/sdcard/target.wav"
+
+        AudioUtilHelper.mp3ToWav(mp3Path, wavPath, object : DecodeUtil.DecodeOperateInterface {
+        override fun onLoadedAudioInfo(audio: String?) {
+        Apputils.log(applicationContext, "onLoadedAudioInfo -- audio = $audio")
+        }
+
+        override fun onLoadedError(audio: String?) {
+        Apputils.log(applicationContext, "onLoadedError -- audio = $audio")
+        hasError = true
+        if (audio != null) {
+        errorMs = audio
+        }
+        }
+        })
+
+--------------------------------
+
+        音频合成功能
+
+        Thread {
+        var path1 = Environment.getExternalStorageDirectory().absolutePath + File.separator + "temp/姑娘我爱你convert1610210798289.wav"
+        var path2 = Environment.getExternalStorageDirectory().absolutePath + File.separator + "temp/遇上你是我的缘convert1610201261595.wav"
+        var pathOut = Environment.getExternalStorageDirectory().absolutePath + File.separator + "temp/遇上你是我的缘_姑娘我爱你_mix.wav"
+        //MixAudioUtil.mixAudio(path1, path2, pathOut, 0.3f, 0.5f);
+        AudioUtilHelper.mixAudio(path1, path2, pathOut, 0.3f, 0.5f)
+        Log.d("ddebug","---run---")
+        }.start()
+
+--------------------------------
+
+        音频拼接功能
+
+        var path = Environment.getExternalStorageDirectory().absolutePath + File.separator + "temp/春晓.wav"//"temp/遇上你是我的缘convert1610201261595.wav"
+        var path1 = Environment.getExternalStorageDirectory().absolutePath + File.separator + "temp/姑娘我爱你convert1610210798289.wav"
+        var pathOut = Environment.getExternalStorageDirectory().absolutePath + File.separator + "temp/春晓merge.wav"//"temp/遇上你是我的缘merge.wav"
+        val fileIn = File(path)
+        val fileOut = File(pathOut);
+        val list = listOf<File>(fileIn, fileIn)//File(path1)
+
+        Thread(){
+            AudioUtilHelper.mergeWav(list,fileOut)
+        }.start();
+
+--------------------------------
+
+        音频提取功能
+
+        Thread(){
+        log("---cutAudio---")
+        var path = Environment.getExternalStorageDirectory().absolutePath + File.separator + "temp/春晓.wav"//"temp/姑娘我爱你convert1610210798289.wav"
+        var path2 = Environment.getExternalStorageDirectory().absolutePath + File.separator + "temp/春晓cut1.wav"//"temp/姑娘我爱你cut1.wav"
+        //AudioCutUtil.cutAudio(path,path2,20f,30f)
+        AudioUtilHelper.cutAudio(path,path2,5f,15f);
+        }.start();
+
+
+
