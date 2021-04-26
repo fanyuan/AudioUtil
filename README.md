@@ -49,12 +49,11 @@ AudioUtil  module
 使用示例：
 ================================================
 
-        录制功能
+录制功能       
 ================================================
-       
 
-        java
-================================================
+   java
+   ================================================    
         String path = AudioUtilHelper.getRecordLocalTempFilePath(this, "一个小测试");
         AudioUtilHelper.startRecord(this, path, object : RecordCallback {
         override fun onRecordError(errorMsg: String) {
@@ -72,8 +71,8 @@ AudioUtil  module
 
         })
 
-        kotlin
-================================================
+  kotlin
+  ================================================
         fun start(v: View){
         val path = externalCacheDir?.absolutePath.toString() + File.separator + "hello/test3.wav"
         AudioUtilHelper.startRecord(this,path,object :RecordCallback{
@@ -95,8 +94,8 @@ AudioUtil  module
         }
 
 -----------------------------
-        mp3转wav
-
+       mp3转wav
+================================================
         val mp3Path = "/sdcard/test.mp3"
         val wavPath = "/sdcard/target.wav"
 
@@ -116,8 +115,8 @@ AudioUtil  module
 
 --------------------------------
 
-        音频合成功能
-
+  音频合成功能
+================================================
         Thread {
         var path1 = Environment.getExternalStorageDirectory().absolutePath + File.separator + "temp/姑娘我爱你convert1610210798289.wav"
         var path2 = Environment.getExternalStorageDirectory().absolutePath + File.separator + "temp/遇上你是我的缘convert1610201261595.wav"
@@ -129,8 +128,8 @@ AudioUtil  module
 
 --------------------------------
 
-        音频拼接功能
-
+   音频拼接功能
+================================================
         var path = Environment.getExternalStorageDirectory().absolutePath + File.separator + "temp/春晓.wav"//"temp/遇上你是我的缘convert1610201261595.wav"
         var path1 = Environment.getExternalStorageDirectory().absolutePath + File.separator + "temp/姑娘我爱你convert1610210798289.wav"
         var pathOut = Environment.getExternalStorageDirectory().absolutePath + File.separator + "temp/春晓merge.wav"//"temp/遇上你是我的缘merge.wav"
@@ -144,8 +143,8 @@ AudioUtil  module
 
 --------------------------------
 
-        音频提取功能
-
+  音频提取功能
+================================================
         Thread(){
         log("---cutAudio---")
         var path = Environment.getExternalStorageDirectory().absolutePath + File.separator + "temp/春晓.wav"//"temp/姑娘我爱你convert1610210798289.wav"
