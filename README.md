@@ -48,10 +48,13 @@ AudioUtil  module
 
 使用示例：
 ================================================
+
         录制功能
+================================================
+       
 
         java
-
+================================================
         String path = AudioUtilHelper.getRecordLocalTempFilePath(this, "一个小测试");
         AudioUtilHelper.startRecord(this, path, object : RecordCallback {
         override fun onRecordError(errorMsg: String) {
@@ -70,7 +73,7 @@ AudioUtil  module
         })
 
         kotlin
-
+================================================
         fun start(v: View){
         val path = externalCacheDir?.absolutePath.toString() + File.separator + "hello/test3.wav"
         AudioUtilHelper.startRecord(this,path,object :RecordCallback{
