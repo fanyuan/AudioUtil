@@ -22,6 +22,38 @@ public class DecodeUtil {
         public void onLoadedAudioInfo(String audio);
         public void onLoadedError(String audio);
     }
+    
+        /**
+     * 获取媒体音频文件时长
+     * @param url
+     * @return
+     */
+    public static long getAudioDuration(String url){
+        long start = System.currentTimeMillis();
+        Log.d("ddebug","getAudioDuration---start = " + start);
+        long duration = -1;
+        MediaExtractor extractor = new MediaExtractor();
+        try {
+            extractor.setDataSource(url);
+        } catch (IOException e) {
+            e.printStackTrace();
+            try {
+                extractor.setDataSource(new FileInputStream(url).getFD());
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+                Log.e("ddebug","解码音频文件路径设置出错");
+            }
+        }
+        if(extractor.getTrackCount() <= 0){
+            return -1;
+        }
+        MediaFormat format = extractor.getTrackFormat(0);
+        duration = format.containsKey(MediaFormat.KEY_DURATION)?format.getLong(MediaFormat.KEY_DURATION):0;
+        duration = duration/1000;//转换为毫秒
+        Log.d("ddebug","getAudioDuration--- = " + (System.currentTimeMillis() - start));
+        return duration;
+    }
+    
     /**
      * 将音乐文件解码
      *
