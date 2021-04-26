@@ -23,7 +23,7 @@ public class DecodeUtil {
         public void onLoadedError(String audio);
     }
     
-        /**
+    /**
      * 获取媒体音频文件时长
      * @param url
      * @return
