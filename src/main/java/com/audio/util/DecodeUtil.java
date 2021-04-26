@@ -25,7 +25,7 @@ public class DecodeUtil {
     
     /**
      * 获取媒体音频文件时长
-     * @param url
+     * @param url   音频文件存放url可以是本地文件也可以是网络文件
      * @return
      */
     public static long getAudioDuration(String url){
