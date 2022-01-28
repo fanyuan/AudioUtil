@@ -49,7 +49,7 @@ AudioUtil  module
 ================================================
            用来提取相关音频文件的片段，调用cutAudio方法通过传入开始时间和结束时间来提取时间区间的音频部分，比如想提取某首歌曲的某几句歌；  
 
-至于把wav文件转换成mp3可以参考另一模块(https://github.com/fanyuan/MyMp3Convert.git)
+至于把wav文件转换成mp3可以参考另一模块(https://github.com/fanyuan/mp3Convert)
 
 
 使用示例：
